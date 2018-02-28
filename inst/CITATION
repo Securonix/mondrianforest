@@ -1,0 +1,12 @@
+citHeader("To cite mondrianforest in publications use:")
+
+citEntry(entry = "Unpublished",
+         title = "Build and Predict with Mondrian Forests",
+         author = personList(as.person("Joseph Miller")),
+         year   = "2018",
+         note = "https://github.com/millerjoey/mondrianforest",
+         textVersion  =
+  paste("Joseph Miller (2018).",
+        "Build and Predict with Mondrian Forests.",
+        "Unpublished")
+)
