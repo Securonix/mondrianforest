@@ -1,0 +1,23 @@
+Package: mondrianforest
+Type: Package
+Title: Build and Predict with Mondrian Forests
+Version: 0.1.0
+Author: person("Joseph", "Miller", email = c("arch1190@gmail.com", "jmiller@securonix.com"), role = c("aut", "cre"))
+Maintainer: Joseph Miller <arch1190@gmail.com>
+Description: This package contains R functions that build and predict 
+    (classification only right now) with Mondrian Forests 
+    [Lakshminarayanan et al. 2014], an online machine learning model 
+    inspired by random forests. The package implements a few 
+    modifications to the original algorithm including a scheme to 
+    dummy-encode categorical variables and a faster ExtendMondrianBlock 
+    algorithm that retains online properties.
+Encoding: UTF-8
+License: MIT + file LICENSE
+Imports:
+    purrr (>= 0.2.4)
+LazyData: true
+RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
