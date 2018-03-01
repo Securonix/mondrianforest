@@ -117,36 +117,36 @@ test &lt;-<span class="st"> </span>census_data[<span class="dv">2501</span><span
 <span class="co"># Class Probabilities:</span>
 <span class="kw">predict</span>(mf, test[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, ], <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>)
 <span class="co">#&gt;          &lt;=50K      &gt;50K</span>
-<span class="co">#&gt; [1,] 0.8748906 0.1251094</span>
-<span class="co">#&gt; [2,] 0.6029963 0.3970037</span>
-<span class="co">#&gt; [3,] 0.8026540 0.1973460</span>
-<span class="co">#&gt; [4,] 0.8392763 0.1607237</span>
-<span class="co">#&gt; [5,] 0.8648819 0.1351181</span>
+<span class="co">#&gt; [1,] 0.8724957 0.1275043</span>
+<span class="co">#&gt; [2,] 0.5867527 0.4132473</span>
+<span class="co">#&gt; [3,] 0.8250238 0.1749762</span>
+<span class="co">#&gt; [4,] 0.8482053 0.1517947</span>
+<span class="co">#&gt; [5,] 0.8449754 0.1550246</span>
 
 <span class="co"># Confusion Matrix:</span>
 <span class="kw">table</span>(test<span class="op">$</span>X15, <span class="kw">predict</span>(mf, test, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>), <span class="dt">dnn =</span> <span class="kw">list</span>(<span class="st">&quot;Actual&quot;</span>, <span class="st">&quot;Predicted&quot;</span>))
 <span class="co">#&gt;        Predicted</span>
 <span class="co">#&gt; Actual  &lt;=50K &gt;50K</span>
-<span class="co">#&gt;   &lt;=50K   339   49</span>
-<span class="co">#&gt;   &gt;50K     90   22</span></code></pre></div>
+<span class="co">#&gt;   &lt;=50K   335   53</span>
+<span class="co">#&gt;   &gt;50K     91   21</span></code></pre></div>
 <p>As is extending an existing Mondrian Forest:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mf_extended &lt;-<span class="st"> </span><span class="kw">extend_mondrian_forest</span>(mf, train[<span class="dv">251</span><span class="op">:</span><span class="dv">500</span>, ])
 
 <span class="co"># Class Probabilities:</span>
 <span class="kw">predict</span>(mf_extended, test[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, ], <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>)
 <span class="co">#&gt;          &lt;=50K      &gt;50K</span>
-<span class="co">#&gt; [1,] 0.8740098 0.1259902</span>
-<span class="co">#&gt; [2,] 0.3323442 0.6676558</span>
-<span class="co">#&gt; [3,] 0.8035855 0.1964145</span>
-<span class="co">#&gt; [4,] 0.8508178 0.1491822</span>
-<span class="co">#&gt; [5,] 0.8631509 0.1368491</span>
+<span class="co">#&gt; [1,] 0.8580887 0.1419113</span>
+<span class="co">#&gt; [2,] 0.4083779 0.5916221</span>
+<span class="co">#&gt; [3,] 0.8426680 0.1573320</span>
+<span class="co">#&gt; [4,] 0.8678975 0.1321025</span>
+<span class="co">#&gt; [5,] 0.8510711 0.1489289</span>
 
 <span class="co"># Confusion Matrix:</span>
 <span class="kw">table</span>(test<span class="op">$</span>X15, <span class="kw">predict</span>(mf_extended, test, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>), <span class="dt">dnn =</span> <span class="kw">list</span>(<span class="st">&quot;Actual&quot;</span>, <span class="st">&quot;Predicted&quot;</span>))
 <span class="co">#&gt;        Predicted</span>
 <span class="co">#&gt; Actual  &lt;=50K &gt;50K</span>
-<span class="co">#&gt;   &lt;=50K   349   39</span>
-<span class="co">#&gt;   &gt;50K     84   28</span></code></pre></div>
+<span class="co">#&gt;   &lt;=50K   344   44</span>
+<span class="co">#&gt;   &gt;50K     87   25</span></code></pre></div>
 </div>
 <div id="scaling-and-transforming-features" class="section level2">
 <h2>Scaling and Transforming Features</h2>
@@ -184,15 +184,15 @@ test &lt;-<span class="st"> </span>census_data[<span class="dv">2501</span><span
 mf_scaled &lt;-<span class="st"> </span><span class="kw">mondrian_forest</span>(train[<span class="dv">1</span><span class="op">:</span><span class="dv">500</span>, ], <span class="dt">y_col_num =</span> <span class="dv">16</span>, <span class="dt">lambda =</span> <span class="dv">8</span>, <span class="dt">f_scale =</span> <span class="dv">1</span><span class="op">/</span>categorical_dummy_columns)</code></pre></div>
 <p>Comparing the object sizes of the <code>mf_extended</code>, trained on all 500 observations of the unmodified data, to <code>mf_scaled</code>, trained on 500 observations of scaled data, suggests that <code>mf_extended}</code> is a more complex model. Nevertheless, scaling the variables results in improved performance likely because it limits excessive splitting on variable <code>X3</code> which has a 6 order of magnitude range.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pryr<span class="op">::</span><span class="kw">object_size</span>(mf_extended)
-<span class="co">#&gt; 24.3 MB</span>
+<span class="co">#&gt; 24.5 MB</span>
 pryr<span class="op">::</span><span class="kw">object_size</span>(mf_scaled)
-<span class="co">#&gt; 20.2 MB</span>
+<span class="co">#&gt; 20.8 MB</span>
 
 <span class="kw">table</span>(test<span class="op">$</span>X15, <span class="kw">predict</span>(mf_scaled, test, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>))
 <span class="co">#&gt;        </span>
 <span class="co">#&gt;         &lt;=50K &gt;50K</span>
-<span class="co">#&gt;   &lt;=50K   377   11</span>
-<span class="co">#&gt;   &gt;50K     79   33</span></code></pre></div>
+<span class="co">#&gt;   &lt;=50K   367   21</span>
+<span class="co">#&gt;   &gt;50K     82   30</span></code></pre></div>
 </div>
 
 
