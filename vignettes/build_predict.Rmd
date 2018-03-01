@@ -23,10 +23,9 @@ Mondrian forests (MFs) were introduced in [Lakshminarayanan at al., 2014](http:/
 An important way in which Mondrian trees (MTs) differ from decision trees (DTs) is in the splitting criterion at each node. In a decision tree, the y-values/labels of the observations are used to choose split variables and split points. In major DT algorithms, this is a deterministic function of the data (making overfitting to noise a concern, hence the need for "random" aspects of random forest). In an MT, if a split is to be made, the split variable and split point are chosen independently of the label to create a partition of the covariate space by a Mondrian process [Roy and Teh, 2009](http://danroy.org/papers/RoyTeh-NIPS-2009.pdf). Because of this non-determinism, bootstrapping from the training set is not necessary to simulate new data to control overfitting allowing each MT to make full use of the dataset. Unlike in a DT, variance in the prediction due to the randomness of class proportions within a partition/leaf node is reduced thanks to the hierarchical smoothing scheme of the nodes along the path to that leaf.
 
 
-```{r}
+```{r, message=FALSE}
 library(mondrianforest)
 library(purrr)
-library(magrittr)
 ```
 
 ## Building a Mondrian Forest
@@ -65,7 +64,7 @@ table(test$X15, predict(mf_extended, test, type = "class"), dnn = list("Actual",
 
 ## Scaling and Transforming Features
 
-Split variables at each node are chosen randomly in proportion to the range of the data. This implementation, rather than requiring that the data be numeric, handles categorical variables as if they had been dummy-encoded (that is, $l-1$ columns of binary flags from a category with $l$ levels). While slowing down the algorithm slightly, this saves on memory and allows for previously unseen categories to be incorporated more easily when the data is streaming. Each implicit dummy variable has a binary indicator, so the parameter $\textsf{f_scale}$ is added to allow the modeler to change the default range for these dummy variables made from each categorical column in the dataset. If subsets of the levels in a column are desired to be scaled differently, the modeler must preprocess the data by splitting one column into multiple.
+Split variables at each node are chosen randomly in proportion to the range of the data. This implementation, rather than requiring that the data be numeric, handles categorical variables as if they had been dummy-encoded (that is, $l-1$ columns of binary flags from a category with $l$ levels). While slowing down the algorithm slightly, this saves on memory and allows for previously unseen categories to be incorporated more easily when the data is streaming. Each implicit dummy variable has a binary indicator, so the parameter `f_scale` is added to allow the modeler to change the default range for these dummy variables made from each categorical column in the dataset. If subsets of the levels in a column are desired to be scaled differently, the modeler must preprocess the data by splitting one column into multiple.
 
 ```{r}
 split_feature <- function(df, column_num, split_set, split_set_description, complement_description) {
@@ -97,9 +96,9 @@ categorical_dummy_columns <- map(census_data[, -ncol(census_data)], function(x) 
 categorical_dummy_columns
 ```
 
-Each parameter $\textsf{f_scale[i]}$ should be interpreted as multiplying each dummy feature column generated from categorical column $i$ by $\textsf{f_scale[i]}$. Thus, argument $\textsf{f_scale=1/categorical_dummy_columns}$ gives each categorical column equal prior preference for each split.
+Each parameter `f_scale[i]` should be interpreted as multiplying each dummy feature column generated from categorical column $i$ by `f_scale[i]`. Thus, argument `f_scale=1/categorical_dummy_columns` gives each categorical column equal prior preference for each split.
 
-Since columns $\textsf{X4_a}$ and $\textsf{X4_b}$ are now separate, taking $\textsf{f_scale=1/categorical_dummy_columns}$ doubles the prior split preference of those levels in aggregate relative to applying the same method to the unsplit $\textsf{X4}$, but gives each level in $\textsf{X4_a}$ slightly more preference because $1/7 > 1/9$. I use a higher $\textsf{lambda}$ here, which relates, along with the range of the variables, to the depth of the tree. Because the scales are lowered on average, I raise this parameter so the trees have approximately equal capacity.
+Since columns `X4_a` and `X4_b` are now separate, taking `f_scale=1/categorical_dummy_columns` doubles the prior split preference of those levels in aggregate relative to applying the same method to the unsplit `X4`, but gives each level in `X4_a` slightly more preference because $1/7 > 1/9$. I use a higher `lambda` here, which relates, along with the range of the variables, to the depth of the tree. Because the scales are lowered on average, I raise this parameter so the trees have approximately equal capacity.
 
 ```{r, cache = TRUE}
 train <- census_data[1:2500, ]
@@ -108,7 +107,7 @@ test <- census_data[2501:3000, ]
 mf_scaled <- mondrian_forest(train[1:500, ], y_col_num = 16, lambda = 8, f_scale = 1/categorical_dummy_columns)
 ```
 
-Comparing the object sizes of the $\textsf{mf_extended}$, trained on all 500 observations of the unmodified data, to $\textsf{mf_scaled}$, trained on 500 observations of scaled data, suggests that $\textsf{mf_extended}$ is a more complex model. Nevertheless, scaling the variables results in improved performance likely because it limits excessive splitting on variable $\textsf{X3}$ which has a 6 order of magnitude range.
+Comparing the object sizes of the `mf_extended`, trained on all 500 observations of the unmodified data, to `mf_scaled`, trained on 500 observations of scaled data, suggests that `mf_extended}` is a more complex model. Nevertheless, scaling the variables results in improved performance likely because it limits excessive splitting on variable `X3` which has a 6 order of magnitude range.
 ```{r, cache = TRUE}
 pryr::object_size(mf_extended)
 pryr::object_size(mf_scaled)
