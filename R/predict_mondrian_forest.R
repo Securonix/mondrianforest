@@ -76,6 +76,9 @@ predict.mondrianforest <- function(mforest, newdata, gamma = 0.0001, type = "pro
   if (missing(newdata)) {
     newdata_list <- mforest$data$X_F
   }
+  else if (is.list(newdata) && all(names(newdata) == c("X_mat", "F_mat"))) {
+    newdata_list <- newdata
+  }
   else {
     if (!any(c("data.frame", "matrix") %in% class(newdata))) {
       stop("newdata must be of class 'data.frame' or 'matrix'.")
