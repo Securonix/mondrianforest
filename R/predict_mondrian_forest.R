@@ -76,7 +76,7 @@ predict.mondrianforest <- function(mforest, newdata, gamma = 0.0001, type = "pro
   if (missing(newdata)) {
     newdata_list <- mforest$data$X_F
   }
-  else if (is.list(newdata) && all(names(newdata) == c("X_mat", "F_mat"))) {
+  else if (is.list(newdata) && length(newdata)==2 && all(names(newdata) == c("X_mat", "F_mat"))) {
     newdata_list <- newdata
   }
   else {
